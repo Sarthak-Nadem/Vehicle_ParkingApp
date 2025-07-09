@@ -1,8 +1,16 @@
 from flask import Flask
 from models.models import db
 
+
 def create_app():
     app = Flask(__name__)
+
+    from controllers.auth_controller import auth_bp, login_manager
+    from flask_login import LoginManager
+
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    app.register_blueprint(auth_bp)
 
     # --- Configs ---
     app.config['SECRET_KEY'] = 'supersecretkey'  # Change for production
