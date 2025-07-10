@@ -1,0 +1,35 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+        <title>Admin Dashboard</title>
+    </head>
+    <body>
+        <h2>Admin Dashboard</h2>
+
+        <a href="{{ url_for('admin.create_lot') }}">+ Add Parking Lot</a>
+
+        <h3>Parking Lots</h3>
+
+        {% for lot in lots %}
+            <div>
+                <strong>{{ lot.name }}</strong> - ₹{{ lot.price_per_hour }}/hr
+                ({{ lot.address }}) | PIN: {{ lot.pincode }}
+                <br>
+                Total Spots: {{ lot.max_spots }} |
+                Occupied: {{ lot.spots|selectattr('status', 'equalto', 'O')|list|length }} |
+                Available: {{ lot.spots|selectattr('status', 'equalto', 'A')|list|length }}
+                <br>
+                <a href="{{ url_for('admin.delete_lot', lot_id=lot.id) }}">Delete</a>
+            </div>
+        {% endfor %}
+
+        <h3>Users</h3>
+        
+        <ul>
+        {% for user in users %}
+            <li>{{ user.full_name }} ({{ user.email }})</li>
+        {% endfor %}
+        </ul>
+
+    </body>
+</html>

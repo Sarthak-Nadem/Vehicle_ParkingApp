@@ -1,9 +1,13 @@
 from flask import Flask
 from models.models import db
+from controllers.admin_controller import admin_bp
+
 
 
 def create_app():
     app = Flask(__name__)
+
+    app.register_blueprint(admin_bp)
 
     from controllers.auth_controller import auth_bp, login_manager
     from flask_login import LoginManager
