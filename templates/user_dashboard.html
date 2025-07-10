@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<h2>Welcome, {{ current_user.full_name }}</h2>
+
+<h3>Available Parking Lots</h3>
+{% for lot in lots %}
+    <div>
+        <strong>{{ lot.name }}</strong> ({{ lot.address }})<br>
+        ₹{{ lot.price_per_hour }}/hr | Spots Available:
+        {{ lot.spots | selectattr('status', 'equalto', 'A') | list | length }} <br>
+        <a href="{{ url_for('user.reserve_spot', lot_id=lot.id) }}">Reserve Spot</a>
+    </div>
+{% endfor %}
+
+<h3>Your Reservations</h3>
+{% for r in reservations %}
+    <div>
+        Spot ID: {{ r.spot_id }} | Lot: {{ r.spot.lot.name }}<br>
+        Start: {{ r.start_time or 'Not started' }}<br>
+        End: {{ r.end_time or 'Not ended' }}<br>
+        {% if not r.start_time %}
+            <a href="{{ url_for('user.occupy_spot', reservation_id=r.id) }}">Occupy</a>
+        {% elif not r.end_time %}
+            <a href="{{ url_for('user.release_spot', reservation_id=r.id) }}">Release</a>
+        {% endif %}
+    </div>
+{% endfor %}
+<form method="POST" action="{{ url_for('user.logout') }}">
+    <button type="submit">Logout</button>
+</form>
+</body>
+</html>
