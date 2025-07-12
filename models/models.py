@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin
+from datetime import timedelta
 
 db = SQLAlchemy()
 
@@ -42,3 +43,9 @@ class Reservation(db.Model):
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime, nullable=True)
     total_cost = db.Column(db.Float, nullable=True)
+
+    def duration(self):
+        if self.end_time:
+            return (self.end_time - self.start_time).total_seconds() / 3600
+        return None
+    

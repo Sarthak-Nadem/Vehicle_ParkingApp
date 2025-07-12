@@ -7,7 +7,9 @@
         <h2>Admin Dashboard</h2>
 
         <a href="{{ url_for('admin.create_lot') }}">+ Add Parking Lot</a>
-
+        <br>
+        <a href="{{ url_for('admin.all_reservations') }}">View All Reservations</a>
+        <br>
         <h3>Parking Lots</h3>
 
         {% for lot in lots %}
@@ -23,6 +25,7 @@
             </div>
         {% endfor %}
 
+        <br>
         <h3>Users</h3>
         
         <ul>

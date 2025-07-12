@@ -11,6 +11,12 @@ def dashboard():
     users = User.query.all()
     return render_template('admin_dashboard.html', lots=lots, users=users)
 
+@admin_bp.route('/reservations')
+@login_required
+def all_reservations():
+    from models.models import Reservation
+    reservations = Reservation.query.order_by(Reservation.start_time.desc()).all()
+    return render_template('admin_reservations.html', reservations=reservations)
 
 @admin_bp.route('/create_lot', methods=['GET', 'POST'])
 @login_required

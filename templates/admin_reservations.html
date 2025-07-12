@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Admin Reservations</title>
+    </head>
+    <body>
+        <h2>All Reservations</h2>
+        {% for r in reservations %}
+
+        <div style="margin-bottom: 10px;">
+        Users= {{ r.user.full_name }}<br>
+        Spot ID: {{ r.spot_id }} | Lot: {{ r.spot.lot }}<br>
+        Start: {{ r.start_time or 'Not started' }} | End: {{ r.end_time or 'Not ended' }}<br>
+        {% if r.duration %}
+            Duration: {{ r.duration }}
+        {% endif %}
+        <hr>
+        {% endfor %}
+    </body>
+</html>

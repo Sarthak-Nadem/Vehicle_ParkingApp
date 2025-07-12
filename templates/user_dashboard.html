@@ -15,10 +15,13 @@
 
 <h3>Your Reservations</h3>
 {% for r in reservations %}
-    <div>
+    <div style="margin-bottom: 10px;">
         Spot ID: {{ r.spot_id }} | Lot: {{ r.spot.lot.name }}<br>
         Start: {{ r.start_time or 'Not started' }}<br>
         End: {{ r.end_time or 'Not ended' }}<br>
+        {% if r.duration %}
+            Duration: {{ r.duration }}<br>
+        {% endif %}
         {% if not r.start_time %}
             <a href="{{ url_for('user.occupy_spot', reservation_id=r.id) }}">Occupy</a>
         {% elif not r.end_time %}
@@ -26,6 +29,8 @@
         {% endif %}
     </div>
 {% endfor %}
+
+
 <form method="POST" action="{{ url_for('user.logout') }}">
     <button type="submit">Logout</button>
 </form>
