@@ -49,3 +49,15 @@ class Reservation(db.Model):
             return (self.end_time - self.start_time).total_seconds() / 3600
         return None
     
+    @property
+    def duration(self):
+        if self.start_time and self.end_time:
+            return self.end_time - self.start_time
+        return None
+
+    @property
+    def cost(self):
+        if self.duration:
+            hours = self.duration.total_seconds() / 3600
+            return round(hours * self.spot.lot.price_per_hour, 2)
+        return None

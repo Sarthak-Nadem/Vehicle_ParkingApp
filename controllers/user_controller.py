@@ -21,6 +21,9 @@ def reserve_spot(lot_id):
     if not available_spot:
         flash("❌ No available spots in this lot.", "danger")
         return redirect(url_for('user.dashboard'))
+        return self.duration.total_seconds() / 3600 * self.spot.lot.price_per_hour
+    
+
 
     # Mark as reserved (still status A)
     reservation = Reservation(spot_id=available_spot.id, user_id=current_user.id)

@@ -11,6 +11,12 @@
         Users= {{ r.user.full_name }}<br>
         Spot ID: {{ r.spot_id }} | Lot: {{ r.spot.lot }}<br>
         Start: {{ r.start_time or 'Not started' }} | End: {{ r.end_time or 'Not ended' }}<br>
+        {% if r.total_cost %}
+        Cost: ₹{{ r.total_cost }}
+        {% elif r.cost %}
+            Estimated: ₹{{ r.cost }}
+        {% endif %}
+        
         {% if r.duration %}
             Duration: {{ r.duration }}
         {% endif %}
