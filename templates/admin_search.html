@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Search</title>
+</head>
+<body>
+    <h2>Search Results for "{{ query }}"</h2>
+
+    {% if user_results %}
+        <h3>Users:</h3>
+        <ul>
+        {% for user in user_results %}
+            <li>{{ user.full_name }} ({{ user.email }})</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if spot %}
+        <h3>Parking Spot:</h3>
+        Spot ID: {{ spot.id }}<br>
+        Lot: {{ spot.lot.name }}<br>
+        Status: 
+        {% if spot.status == 'A' %}
+            ✅ Available
+        {% else %}
+            🚗 Occupied
+        {% endif %}
+    {% endif %}
+
+    {% if not user_results and not spot %}
+        <p>No matches found.</p>
+    {% endif %}
+    <hr>
+    <a href="{{ url_for('admin.dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

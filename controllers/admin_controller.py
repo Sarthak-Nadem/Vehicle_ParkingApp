@@ -43,6 +43,24 @@ def create_lot():
 
     return render_template('create_lot.html')
 
+@admin_bp.route('/search', methods=['GET'])
+@login_required
+def search():
+    query = request.args.get('q', '').strip().lower()
+    user_results = []
+    spot_result = None
+
+    if query:
+        # Search user by name or email
+        user_results = User.query.filter(
+            (User.email.ilike(f"%{query}%")) | (User.full_name.ilike(f"%{query}%"))
+        ).all()
+
+        # Search spot by ID
+        if query.isdigit():
+            spot_result = ParkingSpot.query.get(int(query))
+
+    return render_template('admin_search.html', query=query, user_results=user_results, spot=spot_result)
 
 @admin_bp.route('/delete_lot/<int:lot_id>')
 @login_required
