@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Dashboard</title>
+    </head>
 <body>
 <h2>Welcome, {{ current_user.full_name }}</h2>
 
@@ -29,6 +35,40 @@
         {% endif %}
     </div>
 {% endfor %}
+
+<h3>Reservation History Chart</h3>
+<canvas id="historyChart" width="400" height="200"></canvas>
+<!-- Include Chart.js from CDN -->
+<script>
+const labels = {{ chart_data | tojson | safe }};
+const data = {
+    labels: labels,
+    datasets: [{
+        label: 'Reservations',
+        data: labels.map(() => 1),
+        backgroundColor: '#60a5fa'
+    }]
+};
+
+window.addEventListener('DOMContentLoaded', function() {
+    new Chart(document.getElementById('historyChart'), {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: 'No. of Reservations' } },
+                x: { title: { display: true, text: 'Date' } }
+            }
+        }
+    });
+});
+</script>
+<br>
+
 
 
 <form method="POST" action="{{ url_for('user.logout') }}">

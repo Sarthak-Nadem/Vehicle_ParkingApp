@@ -53,3 +53,17 @@ def release_spot(reservation_id):
     db.session.commit()
     flash("✅ Spot released", "info")
     return redirect(url_for('user.dashboard'))
+
+@user_bp.route('/dashboard')
+@login_required
+def dashboard():
+    lots = ParkingLot.query.all()
+    reservations = Reservation.query.filter_by(user_id=current_user.id).order_by(Reservation.id.desc()).all()
+
+    # Chart data: parking dates
+    chart_data = [
+        r.start_time.strftime('%Y-%m-%d') for r in reservations if r.start_time
+    ]
+
+    return render_template('user_dashboard.html', lots=lots, reservations=reservations, chart_data=chart_data)
+    flash("✅ Parking lot deleted", "success")

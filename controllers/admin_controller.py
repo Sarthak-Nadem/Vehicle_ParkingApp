@@ -79,3 +79,23 @@ def delete_lot(lot_id):
 
     flash("🗑️ Parking lot deleted", "info")
     return redirect(url_for('admin.dashboard'))
+
+@admin_bp.route('/dashboard')
+@login_required
+def dashboard():
+    lots = ParkingLot.query.all()
+    users = User.query.all()
+
+    total_spots = ParkingSpot.query.count()
+    occupied = ParkingSpot.query.filter_by(status='O').count()
+    available = total_spots - occupied
+
+    return render_template(
+        'admin_dashboard.html',
+        lots=lots,
+        users=users,
+        total_spots=total_spots,
+        occupied=occupied,
+        available=available
+    )
+
