@@ -1,14 +1,75 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title>Create Parking Lot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 <body>
-    <h2>Create Parking Lot</h2>
-    <form method="POST">
-        <input name="name" placeholder="Lot Name" required><br>
-        <input name="address" placeholder="Address" required><br>
-        <input name="pincode" placeholder="Pincode" required><br>
-        <input name="price" type="number" step="0.1" placeholder="Price/hour" required><br>
-        <input name="max_spots" type="number" placeholder="Max Spots" required><br>
-        <button type="submit">Create</button>
+
+<div class="container mt-5" style="max-width: 600px;">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h2 class="mb-4 text-center">Create Parking Lot</h2>
+
+    <form method="POST" class="p-4 border rounded shadow-sm bg-light">
+        <div class="mb-3">
+            <label for="name" class="form-label">Lot Name</label>
+            <input name="name" id="name" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <input name="address" id="address" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="pincode" class="form-label">Pincode</label>
+            <input name="pincode" id="pincode" class="form-control" required pattern="\d{6}" placeholder="6-digit pincode">
+        </div>
+
+        <div class="mb-3">
+            <label for="price" class="form-label">Price per Hour (₹)</label>
+            <input name="price" id="price" type="number" step="0.1" min="0" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="max_spots" class="form-label">Maximum Number of Spots</label>
+            <input name="max_spots" id="max_spots" type="number" min="1" class="form-control" required>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-success">Create Lot</button>
+        </div>
     </form>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
+<script>
+    // Ensure Bootstrap JS is loaded for alert dismiss functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        var alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function (alert) {
+            alert.querySelector('.btn-close').addEventListener('click', function () {
+                alert.classList.remove('show');
+            });
+        });
+    });
+</script>

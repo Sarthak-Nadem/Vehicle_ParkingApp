@@ -1,44 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>User Dashboard</title>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 <body>
-<h2>Welcome, {{ current_user.full_name }}</h2>
 
-<h3>Available Parking Lots</h3>
-{% for lot in lots %}
-    <div>
-        <strong>{{ lot.name }}</strong> ({{ lot.address }})<br>
-        ₹{{ lot.price_per_hour }}/hr | Spots Available:
-        {{ lot.spots | selectattr('status', 'equalto', 'A') | list | length }} <br>
-        <a href="{{ url_for('user.reserve_spot', lot_id=lot.id) }}">Reserve Spot</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid justify-content-between">
+    <a class="navbar-brand" href="#">Vehicle Parking App</a>
+    <div class="d-flex">
+      <span class="navbar-text me-3">
+        Logged in as {{ current_user.full_name or User }}
+      </span>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">Logout</a>
     </div>
-{% endfor %}
+  </div>
+</nav>
 
-<h3>Your Reservations</h3>
-{% for r in reservations %}
-    <div style="margin-bottom: 10px;">
-        Spot ID: {{ r.spot_id }} | Lot: {{ r.spot.lot.name }}<br>
-        Start: {{ r.start_time or 'Not started' }}<br>
-        End: {{ r.end_time or 'Not ended' }}<br>
-        {% if r.duration %}
-            Duration: {{ r.duration }}<br>
-        {% endif %}
-        {% if not r.start_time %}
-            <a href="{{ url_for('user.occupy_spot', reservation_id=r.id) }}">Occupy</a>
-        {% elif not r.end_time %}
-            <a href="{{ url_for('user.release_spot', reservation_id=r.id) }}">Release</a>
+<div class="container my-4">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h2 class="mb-4">Welcome, {{ current_user.full_name }}</h2>
+
+    <h4>Available Parking Lots</h4>
+    <div class="row">
+        {% for lot in lots %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ lot.name }}</h5>
+                    <p class="card-text">
+                        {{ lot.address }}<br>
+                        ₹{{ lot.price_per_hour }}/hr<br>
+                        <strong>Available Spots:</strong>
+                        {{ lot.spots | selectattr('status', 'equalto', 'A') | list | length }}
+                    </p>
+                    <a href="{{ url_for('user.reserve_spot', lot_id=lot.id) }}" class="btn btn-primary">Reserve Spot</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+   <h4 class="mt-5">Your Reservations</h4>
+    <div id="reservationList">
+        {% for r in reservations[:3] %}
+        <div class="card mb-3 shadow-sm reservation-card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Spot ID: {{ r.spot_id }} | Lot: {{ r.spot.lot.name }}</h6>
+                <p class="mb-1">Start: {{ r.start_time or 'Not started' }}</p>
+                <p class="mb-1">End: {{ r.end_time or 'Not ended' }}</p>
+                {% if r.total_cost %}
+                    <p class="mb-1">Total Cost: ₹{{ r.total_cost }}</p>
+                {% endif %}
+                {% if not r.start_time %}
+                    <a href="{{ url_for('user.occupy_spot', reservation_id=r.id) }}" class="btn btn-success btn-sm">Occupy</a>
+                {% elif not r.end_time %}
+                    <a href="{{ url_for('user.release_spot', reservation_id=r.id) }}" class="btn btn-warning btn-sm">Release</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Hidden Extra Reservations -->
+        <div id="extraReservations" style="display: none;">
+            {% for r in reservations[3:] %}
+            <div class="card mb-3 shadow-sm reservation-card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        Spot ID: {{ r.spot_id }} | Lot: {{ r.spot.lot.name }}
+                        {% if not r.start_time %}
+                            <span class="text-warning">[Reserved - Not Occupied]</span>
+                        {% elif not r.end_time %}
+                            <span class="text-success">[Occupied]</span>
+                        {% else %}
+                            <span class="text-muted">[Completed]</span>
+                        {% endif %}
+                    </h6>
+
+                    <p class="mb-1">Start: {{ r.start_time or 'Not started' }}</p>
+                    <p class="mb-1">End: {{ r.end_time or 'Not ended' }}</p>
+                    
+                    {% if r.total_cost %}
+                        <p class="mb-1">Total Cost: ₹{{ r.total_cost }}</p>
+                    {% endif %}
+                    {% if not r.start_time %}
+                        <a href="{{ url_for('user.occupy_spot', reservation_id=r.id) }}" class="btn btn-success btn-sm">Occupy</a>
+                    {% elif not r.end_time %}
+                        <a href="{{ url_for('user.release_spot', reservation_id=r.id) }}" class="btn btn-warning btn-sm">Release</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if reservations|length > 3 %}
+        <div class="text-end">
+            <button id="showMoreBtn" class="btn btn-link">+ Show More</button>
+            <button id="showLessBtn" class="btn btn-link" style="display: none;">− Show Less</button>
+        </div>
         {% endif %}
     </div>
-{% endfor %}
 
-<h3>Reservation History Chart</h3>
-<canvas id="historyChart" width="400" height="200"></canvas>
-<!-- Include Chart.js from CDN -->
+
+    <h4 class="mt-5">Reservation History Chart</h4>
+    <canvas id="historyChart" height="200" style="max-width:100%"></canvas>
+</div>
+
+<!-- Chart.js -->
 <script>
 const labels = {{ chart_data | tojson | safe }};
 const data = {
@@ -50,29 +136,52 @@ const data = {
     }]
 };
 
-window.addEventListener('DOMContentLoaded', function() {
-    new Chart(document.getElementById('historyChart'), {
-        type: 'bar',
-        data: data,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false }
+new Chart(document.getElementById('historyChart'), {
+    type: 'bar',
+    data: data,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: 'No. of Reservations' }
             },
-            scales: {
-                y: { beginAtZero: true, title: { display: true, text: 'No. of Reservations' } },
-                x: { title: { display: true, text: 'Date' } }
+            x: {
+                title: { display: true, text: 'Date' }
             }
         }
-    });
+    }
 });
 </script>
-<br>
 
+<!-- Bootstrap JS (for alerts) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
-<form method="POST" action="{{ url_for('user.logout') }}">
-    <button type="submit">Logout</button>
-</form>
 </body>
+<script>
+    const showMoreBtn = document.getElementById('showMoreBtn');
+    const showLessBtn = document.getElementById('showLessBtn');
+    const extraReservations = document.getElementById('extraReservations');
+
+    if (showMoreBtn) {
+        showMoreBtn.addEventListener('click', function () {
+            extraReservations.style.display = 'block';
+            showMoreBtn.style.display = 'none';
+            showLessBtn.style.display = 'inline-block';
+        });
+    }
+
+    if (showLessBtn) {
+        showLessBtn.addEventListener('click', function () {
+            extraReservations.style.display = 'none';
+            showMoreBtn.style.display = 'inline-block';
+            showLessBtn.style.display = 'none';
+            window.scrollTo({ top: document.getElementById('reservationList').offsetTop, behavior: 'smooth' });
+        });
+    }
+</script>
+
 </html>

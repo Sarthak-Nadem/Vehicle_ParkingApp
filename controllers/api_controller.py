@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
-from models.models import db, ParkingLot, ParkingSpot, Reservation, User
+from models.models import ParkingLot, ParkingSpot, Reservation, User
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
-# ---- Get All Parking Lots ----
+
 @api_bp.route('/lots')
 def get_lots():
     lots = ParkingLot.query.all()
@@ -18,7 +18,7 @@ def get_lots():
         } for lot in lots
     ])
 
-# ---- Get All Parking Spots ----
+
 @api_bp.route('/spots')
 def get_spots():
     spots = ParkingSpot.query.all()
@@ -30,7 +30,7 @@ def get_spots():
         } for spot in spots
     ])
 
-# ---- Get All Reservations ----
+
 @api_bp.route('/reservations')
 def get_reservations():
     reservations = Reservation.query.all()
@@ -45,14 +45,14 @@ def get_reservations():
         } for r in reservations
     ])
 
-# ---- Get All Users (Admin-only Use) ----
+
 @api_bp.route('/users')
 def get_users():
     users = User.query.all()
     return jsonify([
         {
-            "id": user.id,
-            "email": user.email,
-            "full_name": user.full_name
-        } for user in users
+            "id": u.id,
+            "email": u.email,
+            "full_name": u.full_name
+        } for u in users
     ])

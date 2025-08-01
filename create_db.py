@@ -1,14 +1,19 @@
-from app import app
-from models.models import db, Admin
+from models.models import db, User, Admin
+from app import create_app
 
-with app.app_context():
-    db.create_all()
+app = create_app()
+app.app_context().push()
 
-    # Check if admin exists
-    if not Admin.query.first():
-        default_admin = Admin(username='admin', password='admin123')  # Change password later
-        db.session.add(default_admin)
-        db.session.commit()
-        print("✅ Admin user created.")
-    else:
-        print("⚠️ Admin already exists.")
+# Create tables
+db.create_all()
+
+# Add default admin
+if not Admin.query.first():
+    admin = Admin(username='admin', password='admin123')
+    db.session.add(admin)
+    db.session.commit()
+    print("Admin created: username='admin', password='admin123'")
+else:
+    print("Admin already exists.")
+
+print("Database and tables created.")
