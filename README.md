@@ -51,3 +51,11 @@ This is a multi-user web application built as part of the *Modern Application De
    ```bash
    git clone https://github.com/24f2003400/Vehicle_ParkingApp-V1
    cd vehicle-parking-app
+
+2. Run in respective terminal:
+   ``` bash
+   python create_db.py
+
+3. Run app in respective terminal:
+   ```bash
+   python app.py
